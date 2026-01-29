@@ -10,7 +10,7 @@ export default class App extends Component {
     render(){
         return <HomePage />;
     }
-}
+};
 
 const appDiv = document.getElementById("app");
 const root = createRoot(appDiv);

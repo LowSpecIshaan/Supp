@@ -10,7 +10,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Box from '@mui/material/Box';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -21,7 +21,7 @@ const darkTheme = createTheme({
     },
 });
 
-export default class CreateRoomPage extends Component {
+class CreateRoomPage extends Component {
     defaultVotes = 2;
 
     constructor(props) {
@@ -59,7 +59,7 @@ export default class CreateRoomPage extends Component {
         };
         fetch('/api/create-room', requestOptions)
             .then(response=>response.json())
-            .then(data=>console.log(data));
+            .then(data=>this.props.navigate("/room/"+data.code));
     }
 
     render() {
@@ -73,7 +73,7 @@ export default class CreateRoomPage extends Component {
                         <Grid item xs={12} sx={{ width: "100%", textAlign: "center" }}>
                             <FormControl component="fieldset">
                                 <FormHelperText sx={{ display: "flex", justifyContent: "center" }}>
-                                    <div align="centre">Guest Control of Playback State</div>
+                                    <div align="center">Guest Control of Playback State</div>
                                 </FormHelperText>
                                 <RadioGroup row defaultValue='true' onChange={this.handleGuestCanPauseChange}>
                                     <FormControlLabel
@@ -110,3 +110,10 @@ export default class CreateRoomPage extends Component {
             </ThemeProvider>);
     }
 }
+
+function CreateRoomPageWrapper(props) {
+    const navigate = useNavigate();
+    return <CreateRoomPage {...props} navigate={navigate} />;
+}
+
+export default CreateRoomPageWrapper;
