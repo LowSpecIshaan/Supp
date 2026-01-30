@@ -48,7 +48,9 @@ class CreateRoomPage extends Component {
         })
     }
 
-    handleRoomButtonPressed(){
+    handleRoomButtonPressed(e){
+        e.preventDefault();
+
         const requestOptions = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -66,7 +68,7 @@ class CreateRoomPage extends Component {
         return (
             <ThemeProvider theme={darkTheme}>
                 <Grid container spacing={2} sx={{ width: "100%", height: "50vh", flexDirection: "column", marginTop: "20vh" }} display="flex" justifyContent="center" alignItems="center">
-                    <Box sx={{ padding: "20px", background: "#1d1b28", borderRadius: "8px" }}>
+                    <Box component="form" onSubmit={this.handleRoomButtonPressed} sx={{ padding: "20px", background: "#1d1b28", borderRadius: "8px" }}>
                         <Grid item xs={12} sx={{ width: "100%", textAlign: "center" }}>
                             <Typography component="h4" variant="h4">Create a Room</Typography>
                         </Grid>
@@ -97,11 +99,11 @@ class CreateRoomPage extends Component {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} align="center" sx={{ marginTop: "15px" }}>
-                                <Button item color="primary" sx={{ margin: "5px" }} variant="contained" onClick={this.handleRoomButtonPressed}>
+                                <Button type="submit" item color="primary" sx={{ margin: "5px", width: "50%" }} variant="contained">
                                     Create Room
                                 </Button>
-                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" to="/" component={Link}>
-                                    Back
+                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" to="/join" component={Link}>
+                                    Join Room Instead
                                 </Button>
                             </Grid>
                         </Grid>
