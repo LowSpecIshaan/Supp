@@ -41,7 +41,7 @@ class RoomJoinPage extends Component {
         fetch('/api/join-room', requestOptions)
             .then(response => {
                 if (response.ok) {
-                    this.props.navigate("/room/" + this.state.roomCode);
+                    this.props.navigate("/room/" + this.state.roomCode.toUpperCase());
                 } else {
                     this.setState({
                         error: "Room Not Found."
