@@ -25,7 +25,6 @@ class RoomJoinPage extends Component {
         this.setState({
             roomCode: e.target.value
         });
-        console.log(this.state.roomCode);
     }
 
     handleJoinRoom(e) {

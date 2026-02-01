@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
@@ -17,21 +17,35 @@ const darkTheme = createTheme({
 export default class HomePage extends Component {
     constructor(props) {
         super(props);
-        this.state={
-            roomCode: null, 
+        this.state = {
+            roomCode: null,
             roomCheck: false
         };
         this.renderHomePage = this.renderHomePage.bind(this);
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         fetch('/api/user-in-room')
-            .then(response=>response.json())
-            .then(data=>{
+            .then(response => response.json())
+            .then(data => {
                 this.setState({
                     roomCode: data.code,
                     roomCheck: true,
                 });
+            });
+    }
+
+    leaveRoomHome = () => {
+        alert("Left the previously joined room.");
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        }
+
+        return fetch('/api/leave-room', requestOptions)
+            .then(response => {
+                response.json();
             });
     }
 
@@ -59,12 +73,29 @@ export default class HomePage extends Component {
         return (<Router>
             <Routes>
                 <Route path="/" element={
-                    !this.state.roomCheck ? null : this.state.roomCode ? (<Navigate to={`/room/${this.state.roomCode}`} replace />) : (this.renderHomePage())
-                 } /> {/* we call this.renderHomePage() and not this.renderHomePage as the function is not waiting for an event to occur to be called, it gets called immediately. */}
+                    <Home roomCode={this.state.roomCode} roomCheck={this.state.roomCheck}
+                        renderHomePage={this.renderHomePage}
+                        leaveRoomHome={this.leaveRoomHome} />
+                } /> {/* we call this.renderHomePage() and not this.renderHomePage as the function is not waiting for an event to occur to be called, it gets called immediately. */}
                 <Route path="/join" element={<RoomJoinPage />} />
                 <Route path="/create" element={<CreateRoomPage />} />
                 <Route path="/room/:roomCode" element={<RoomWrapper />} />
             </Routes>
         </Router>)
     }
+}
+
+function Home({ renderHomePage, leaveRoomHome, roomCode, roomCheck }) {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (roomCheck && roomCode) {
+            leaveRoomHome().then(() => {
+                navigate("/");
+            });
+        }
+    }, [roomCode, leaveRoomHome, navigate]);
+
+
+    return renderHomePage();
 }
