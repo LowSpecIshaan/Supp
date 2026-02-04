@@ -55,7 +55,7 @@ class RoomJoinPage extends Component {
                 <Grid container spacing={2} sx={{ width: "100%", height: "50vh", flexDirection: "column", marginTop: "25vh" }} display="flex" justifyContent="center" alignItems="center">
                     <Box component="form" onSubmit={this.handleJoinRoom} sx={{ paddingY: "20px", background: "#1d1b28", borderRadius: "8px" }}>
                         <Grid item xs={12} sx={{ width: "100%", textAlign: "center" }}>
-                            <Typography sx={{fontFamily: "Inter", fontWeight: "700"}} component="h4" variant="h4">Join a Room</Typography>
+                            <Typography sx={{ fontFamily: "Inter", fontWeight: "700" }} component="h4" variant="h4">Join a Room</Typography>
                         </Grid>
                         <Grid item xs={12} sx={{ width: "100%", textAlign: "center" }}>
                             <Grid item xs={12} align="center">
