@@ -36,8 +36,6 @@ export default class HomePage extends Component {
     }
 
     leaveRoomHome = () => {
-        alert("Left the previously joined room.");
-
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -46,6 +44,7 @@ export default class HomePage extends Component {
         return fetch('/api/leave-room', requestOptions)
             .then(response => {
                 response.json();
+                alert("Left the previously joined room.");
             });
     }
 

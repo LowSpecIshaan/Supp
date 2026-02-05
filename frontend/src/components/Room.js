@@ -67,10 +67,9 @@ class Room extends Component {
                 this.setState({
                     votesToSkip: data.votes_to_skip,
                     guestCanPause: data.guest_can_pause,
-                })
+                });
+                this.showSettings(false);
             });
-
-        this.showSettings(false);
     }
 
     getRoomInfo() {
@@ -134,7 +133,7 @@ class Room extends Component {
                                 <FormHelperText sx={{ display: "flex", justifyContent: "center" }}>
                                     <div align="center">Guest Control of Playback State</div>
                                 </FormHelperText>
-                                <RadioGroup row onChange={this.handleGuestCanPauseChange}>
+                                <RadioGroup row defaultValue={this.state.guestCanPause.toString()} onChange={this.handleGuestCanPauseChange}>
                                     <FormControlLabel
                                         value='true'
                                         control={<Radio color="primary" />}
@@ -149,7 +148,7 @@ class Room extends Component {
                             </FormControl>
                             <Grid item xs={12} align="center">
                                 <FormControl>
-                                    <TextField required={true} type="number" sx={{ marginTop: "20px" }} onChange={this.handleVotesChange} default={this.state.votesToSkip} slotProps={{ htmlInput: { min: 1, style: { textAlign: "center" } } }} />
+                                    <TextField required={true} type="number" sx={{ marginTop: "20px" }} onChange={this.handleVotesChange} defaultValue={this.state.votesToSkip} slotProps={{ htmlInput: { min: 1, style: { textAlign: "center" } } }} />
                                     <FormHelperText>
                                         <div align="center">Votes Required to Skip the Song</div>
                                     </FormHelperText>
@@ -180,8 +179,8 @@ class Room extends Component {
                         <Box sx={{ paddingX: "20px", paddingY: "40px", background: "#1d1b28", borderRadius: "8px" }}>
                             <Grid item xs={12} alignItems="center">
                                 <Typography textAlign="center" component="h4" variant="h4" sx={{ fontFamily: "Inter", fontWeight: "700" }}>{this.roomCode}</Typography>
-                                <Typography textAlign="center" component="h5" variant="h5" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Guests can Pause: {this.state.guestCanPause.toString()}</Typography>
-                                <Typography textAlign="center" component="h5" variant="h5" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Votes to Skip: {this.state.votesToSkip}</Typography>
+                                <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Guests can Pause: {this.state.guestCanPause.toString()}</Typography>
+                                <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Votes to Skip: {this.state.votesToSkip}</Typography>
                             </Grid>
                             {this.state.isHost ? this.renderSettingsButton() : null}
                             <Grid item xs={12} marginTop="10px" display="flex" justifyContent="center">
