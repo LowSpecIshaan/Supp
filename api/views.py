@@ -105,17 +105,17 @@ class UpdateRoomSettings(APIView):
 
             query_set = Room.objects.filter(code=code)
             if not query_set.exists():
-                return Response({'Bad Request': 'Room Not Found.'}, status=HTTP_404_NOT_FOUND)
+                return Response({'Bad Request': 'Room Not Found.'}, status=status.HTTP_404_NOT_FOUND)
             room = query_set.first()
-            user_id = self.request.session.get('session_key')
+            user_id = self.request.session.session_key
             if(room.host != user_id):
-                return Response({'Bad Request': 'Only hosts can update room settings.'}, status=HTTP_403_FORBIDDEN)
+                return Response({'Bad Request': 'Only hosts can update room settings.'}, status=status.HTTP_403_FORBIDDEN)
             room.guest_can_pause = guest_can_pause
             room.votes_to_skip = votes_to_skip
             room.save(update_fields = ['guest_can_pause', 'votes_to_skip'])
             return Response(RoomSerializer(room).data, status = status.HTTP_200_OK)
 
-        return Response({'Bad Request': 'Invalid Data.'}, status = HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid Data.'}, status = status.HTTP_400_BAD_REQUEST)
 
 class LeaveRoom(APIView):
     def post(self, request, format=None):
