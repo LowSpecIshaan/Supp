@@ -17,4 +17,6 @@ class Room(models.Model):
     host = models.CharField(max_length = 50, unique = True)
     guest_can_pause = models.BooleanField(null = False, default = False)
     votes_to_skip = models.IntegerField(null = False, default = 1)
-    created_at = models.TimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_playing = models.BooleanField(null = False, default = False)
+    current_track_id = models.CharField(max_length=100, null=True)

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles"
 import { Button, Grid, Typography, Box, FormControl, FormHelperText, FormControlLabel, RadioGroup, Radio, TextField } from "@mui/material"
@@ -24,6 +24,8 @@ class Room extends Component {
             guestCanPause: true,
             isHost: false,
             settings: false,
+            songLoaded: true,
+            playing: false,
         };
         this.roomCode = props.params.roomCode;
 
@@ -35,6 +37,78 @@ class Room extends Component {
 
     componentDidMount() {
         this.getRoomInfo();
+
+        const script = document.createElement("script");
+        script.src = "https://w.soundcloud.com/player/api.js";
+        script.async = true;
+
+        script.onload = () => {
+            const iframe = document.getElementById("sc-player");
+
+            if (window.SC && iframe) {
+                this.widget = window.SC.Widget(iframe);
+
+                this.widget.bind(window.SC.Widget.Events.PLAY, () => {
+                    console.log("Play detected");
+
+                    if (!this.state.isHost && !this.state.guestCanPause) {
+                        return;
+                    }
+
+                    const requestOptions = {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            state: "play",
+                            room_code: this.roomCode
+                        })
+                    };
+
+                    fetch('/api/play-pause-song', requestOptions)
+                        .then(response => response.json())
+                });
+
+                this.widget.bind(window.SC.Widget.Events.PAUSE, () => {
+                    console.log("Pause detected");
+
+                    if (!this.state.isHost && !this.state.guestCanPause) {
+                        return;
+                    }
+
+                    const requestOptions = {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            state: "pause",
+                            room_code: this.roomCode
+                        })
+                    };
+
+                    fetch('/api/play-pause-song', requestOptions)
+                        .then(response => response.json())
+                });
+
+                this.pollInterval = setInterval(async () => {
+                    const res = await fetch(`/api/current-playback?room_code=${this.roomCode}`);
+                    const data = await res.json();
+
+                    if (!this.widget) return;
+
+                    this.widget.isPaused(paused => {
+                        if (data.state === "play" && paused) {
+                            this.widget.play();
+                        }
+
+                        if (data.state === "pause" && !paused) {
+                            this.widget.pause();
+                        }
+                    });
+                }, 1000);
+
+            }
+        };
+
+        document.body.appendChild(script);
     }
 
     handleVotesChange = (e) => {
@@ -54,7 +128,7 @@ class Room extends Component {
 
         const requestOptions = {
             method: "PATCH",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 votes_to_skip: this.state.votesToSkip,
                 guest_can_pause: this.state.guestCanPause,
@@ -62,8 +136,8 @@ class Room extends Component {
             })
         };
         fetch('/api/update-room-settings', requestOptions)
-            .then(response=>response.json())
-            .then(data=>{
+            .then(response => response.json())
+            .then(data => {
                 this.setState({
                     votesToSkip: data.votes_to_skip,
                     guestCanPause: data.guest_can_pause,
@@ -120,6 +194,22 @@ class Room extends Component {
         )
     }
 
+    renderPlayer() {
+        const trackId = 43315398;
+
+        return (
+            <Grid item xs={12} mt="10px" display="flex" justifyContent="center">
+                <iframe
+                    width="100%"
+                    height="166"
+                    allow="autoplay"
+                    id="sc-player"
+                    src={`https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${trackId}&color=%23ff5500`}
+                />
+            </Grid>
+        )
+    }
+
     renderSettings() {
         return (
             <ThemeProvider theme={darkTheme}>
@@ -144,7 +234,7 @@ class Room extends Component {
                                         control={<Radio color="warning" />}
                                         label="No Control"
                                         labelPlacement="bottom" />
-                                </RadioGroup>   
+                                </RadioGroup>
                             </FormControl>
                             <Grid item xs={12} align="center">
                                 <FormControl>
@@ -182,6 +272,7 @@ class Room extends Component {
                                 <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Guests can Pause: {this.state.guestCanPause.toString()}</Typography>
                                 <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Votes to Skip: {this.state.votesToSkip}</Typography>
                             </Grid>
+                            {this.state.songLoaded ? this.renderPlayer() : null}
                             {this.state.isHost ? this.renderSettingsButton() : null}
                             <Grid item xs={12} marginTop="10px" display="flex" justifyContent="center">
                                 <Button item color="warning" sx={{ margin: "5px" }} variant="contained" onClick={this.leaveRoom}>

@@ -117,6 +117,45 @@ class UpdateRoomSettings(APIView):
 
         return Response({'Bad Request': 'Invalid Data.'}, status = status.HTTP_400_BAD_REQUEST)
 
+class PlayPauseSong(APIView):
+    def post(self, request, format=None):
+        state = request.data.get('state')
+        room_code = request.data.get('room_code')
+
+        if state and room_code:
+            try:
+                room = Room.objects.get(code=room_code)
+            except Room.DoesNotExist:
+                return Response(
+                    {"message": "Room not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            room.is_playing = (state == "play")
+            room.save(update_fields=["is_playing"])
+
+            return Response(
+                {"state": state},
+                status=status.HTTP_200_OK
+            )
+
+        return Response({"Message": "Bad request."}, status = status.HTTP_400_BAD_REQUEST)
+
+class CurrentPlayback(APIView):
+    def get(self, request, format=None):
+        room_code = request.GET.get("room_code")
+
+        try:
+            room = Room.objects.get(code=room_code)
+        except Room.DoesNotExist:
+            return Response({}, status=404)
+
+        return Response({
+            "state": "play" if room.is_playing else "pause",
+            "track_id": room.current_track_id,
+        })        
+
+
 class LeaveRoom(APIView):
     def post(self, request, format=None):
         if 'room_code' in self.request.session:

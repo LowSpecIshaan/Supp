@@ -29,12 +29,13 @@ def is_soundcloud_authenticated(session_id):
     if tokens:
         expiry = tokens.expires_in
         if expiry <= timezone.now():
-            refresh_soundcloud_token(tokens)
+            refreshed = refresh_soundcloud_token(session_id, tokens)
+            return refreshed
         return True
         
     return False
 
-def refresh_soundcloud_token(tokens):
+def refresh_soundcloud_token(session_id, tokens):
     refresh_token = tokens.refresh_token
 
     response = post("https://secure.soundcloud.com/oauth/token", data={
@@ -42,10 +43,18 @@ def refresh_soundcloud_token(tokens):
         "refresh_token": refresh_token,
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET
-    }).json()
+    })
+
+    if response.status_code != 200:
+        return False
+    
+    response = response.json()
 
     access_token = response.get("access_token")
     expires_in = response.get("expires_in")
     refresh_token = response.get("refresh_token")
+
+    if not access_token or not expires_in:
+        return False
 
     update_or_create_user_tokens(session_id, access_token, refresh_token, expires_in)

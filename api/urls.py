@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RoomView, CreateRoomView, RoomInfo, JoinRoom, UserInRoom, LeaveRoom, UpdateRoomSettings
+from .views import RoomView, CreateRoomView, RoomInfo, JoinRoom, UserInRoom, LeaveRoom, UpdateRoomSettings, PlayPauseSong, CurrentPlayback
 
 urlpatterns = [
     path('room', RoomView.as_view()),
@@ -8,5 +8,7 @@ urlpatterns = [
     path('join-room', JoinRoom.as_view()),
     path('user-in-room', UserInRoom.as_view()),
     path('leave-room', LeaveRoom.as_view()),
-    path('update-room-settings', UpdateRoomSettings.as_view())
+    path('update-room-settings', UpdateRoomSettings.as_view()),
+    path('play-pause-song', PlayPauseSong.as_view()),
+    path('current-playback', CurrentPlayback.as_view())
 ]
