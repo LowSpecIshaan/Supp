@@ -29,11 +29,35 @@ class CreateRoomPage extends Component {
         this.state = {
             guestCanPause: true,
             votesToSkip: this.defaultVotes,
+            soundcloudAuthenticated: false,
         };
 
         this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
         this.handleVotesChange = this.handleVotesChange.bind(this);
         this.handleGuestCanPauseChange = this.handleGuestCanPauseChange.bind(this);
+    }
+
+    componentDidMount(){
+        if(!this.state.soundcloudAuthenticated){
+            this.authenticateSoundcloud();
+        } 
+    }
+
+    authenticateSoundcloud = () => {
+        fetch('/soundcloud/is-authenticated')
+            .then(response=>response.json())
+            .then(data=>{
+                this.setState({
+                    soundcloudAuthenticated: data.status
+                });
+                if(!data.status){
+                    fetch('/soundcloud/get-auth-url')
+                        .then(response=>response.json())
+                        .then(data=>{
+                            window.location.replace(data.url);
+                        })
+                }
+            });
     }
 
     handleVotesChange(e) {
