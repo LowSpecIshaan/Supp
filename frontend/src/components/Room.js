@@ -120,7 +120,7 @@ class Room extends Component {
                         this.setState({ trackID: data.track_id });
 
                         this.widget.load(
-                            `https://api.soundcloud.com/tracks/${data.track_id}`,
+                            `https://api.soundcloud.com/tracks/${data.track_id}&color=%231d1b28`,
                             { auto_play: data.state === "play" }
                         );
 
