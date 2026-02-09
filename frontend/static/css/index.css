@@ -4,10 +4,10 @@ body {
     margin: 0;
     padding: 0;
     background:
-        radial-gradient(circle at 15% 20%, rgba(130, 200, 137, 0.238) 0 160px, transparent 160px),
-        radial-gradient(circle at 85% 75%, rgba(221, 191, 219, 0.4) 0 200px, transparent 200px),
-        radial-gradient(circle at 70% 30%, rgba(255, 230, 170, 0.4) 0 120px, transparent 120px),
-        #FFB997 !important;
+        radial-gradient(circle, rgba(130, 200, 137, 0.119) 0 370px, transparent 160px),
+        radial-gradient(circle, rgba(221, 191, 219, 0.107) 0 250px, transparent 200px),
+        radial-gradient(circle, rgba(170, 251, 255, 0.095) 0 160px, transparent 120px),
+        #2d0052 !important;
     position: relative;
     overflow: hidden;
     color: white;
@@ -18,10 +18,21 @@ body::before {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.697) 3px, transparent 2px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.496) 3px, transparent 2px);
   background-size: 120px 120px;
   opacity: 0.3;
   pointer-events: none;
+
+  animation: dotsMove 5s linear infinite;
+}
+
+@keyframes dotsMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 120px 0;
+  }
 }
 
 #main {

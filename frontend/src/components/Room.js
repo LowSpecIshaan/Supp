@@ -217,7 +217,7 @@ class Room extends Component {
     renderSettingsButton() {
         return (
             <Grid item xs={12} marginTop="10px" display="flex" justifyContent="center" >
-                <Button item color="secondary" variant="contained" onClick={() => this.showSettings(true)}>
+                <Button item color="warning" variant="contained" onClick={() => this.showSettings(true)}>
                     Settings
                 </Button>
             </Grid>
@@ -232,7 +232,7 @@ class Room extends Component {
                     height="166"
                     allow="autoplay"
                     id="sc-player"
-                    src={`https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${this.state.trackID}&color=%23ff5500`}
+                    src={`https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${this.state.trackID}&color=%231d1b28&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false`}
                 />
             </Grid>
         )
@@ -335,7 +335,7 @@ class Room extends Component {
                                         labelPlacement="bottom" />
                                     <FormControlLabel
                                         value='false'
-                                        control={<Radio color="warning" />}
+                                        control={<Radio color="secondary" />}
                                         label="No Control"
                                         labelPlacement="bottom" />
                                 </RadioGroup>
@@ -352,7 +352,7 @@ class Room extends Component {
                                 <Button type="submit" item color="primary" sx={{ margin: "5px", width: "50%" }} variant="contained">
                                     Save Settings
                                 </Button>
-                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" onClick={() => this.showSettings(false)}>
+                                <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" onClick={() => this.showSettings(false)}>
                                     Close Settings
                                 </Button>
                             </Grid>
@@ -412,7 +412,7 @@ class Room extends Component {
                             {this.renderPlayer()}
                             {this.state.isHost ? this.renderSettingsButton() : null}
                             <Grid item xs={12} marginTop="10px" display="flex" justifyContent="center">
-                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" onClick={this.leaveRoom}>
+                                <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" onClick={this.leaveRoom}>
                                     Leave Room
                                 </Button>
                             </Grid>

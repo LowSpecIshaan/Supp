@@ -107,7 +107,7 @@ class CreateRoomPage extends Component {
                                         labelPlacement="bottom" />
                                     <FormControlLabel
                                         value='false'
-                                        control={<Radio color="warning" />}
+                                        control={<Radio color="secondary" />}
                                         label="No Control"
                                         labelPlacement="bottom" />
                                 </RadioGroup>
@@ -124,7 +124,7 @@ class CreateRoomPage extends Component {
                                 <Button type="submit" item color="primary" sx={{ margin: "5px", width: "50%" }} variant="contained">
                                     Create Room
                                 </Button>
-                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" to="/join" component={Link}>
+                                <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" to="/join" component={Link}>
                                     Join Room Instead
                                 </Button>
                             </Grid>

@@ -58,7 +58,7 @@ export default class HomePage extends Component {
                             <Button item color="primary" sx={{ margin: "5px", width: "50%" }} variant="contained" to="/join" component={Link}>
                                 Join Room
                             </Button>
-                            <Button item color="warning" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
+                            <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
                                 Create Room
                             </Button>
                         </Grid>

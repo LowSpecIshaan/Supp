@@ -76,7 +76,7 @@ class RoomJoinPage extends Component {
                                 <Button type="submit" item color="primary" sx={{ margin: "5px", width: "40%" }} variant="contained">
                                     Join Room
                                 </Button>
-                                <Button item color="warning" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
+                                <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
                                     Create New Room
                                 </Button>
                             </Grid>
