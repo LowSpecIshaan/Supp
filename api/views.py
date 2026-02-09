@@ -166,3 +166,25 @@ class LeaveRoom(APIView):
                 room = room_results[0]
                 room.delete()
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+
+class SelectTrack(APIView):
+    def patch(self, request, format=None):
+        track_id = request.data.get("track_id")
+        room_code = request.data.get("room_code")
+
+        if not track_id or not room_code:
+            return Response({"error": "Bad request"}, status=400)
+
+        try:
+            room = Room.objects.get(code=room_code)
+        except Room.DoesNotExist:
+            return Response({"error": "Room not found"}, status=404)
+
+        if request.session.session_key != room.host:
+            return Response({"error": "Only host allowed"}, status=403)
+
+        room.current_track_id = track_id
+        room.is_playing = True
+        room.save(update_fields=["current_track_id", "is_playing"])
+
+        return Response({"success": True})

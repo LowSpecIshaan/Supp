@@ -4,10 +4,10 @@ import base64
 from django.shortcuts import render, redirect
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from rest_framework.views import APIView
-from requests import Request, post
+from requests import Request, post, get
 from rest_framework import status
 from rest_framework.response import Response
-from .util import update_or_create_user_tokens, is_soundcloud_authenticated
+from .util import update_or_create_user_tokens, is_soundcloud_authenticated, get_user_tokens
 
 class AuthURL(APIView):
     def get(self, request, format=None):
@@ -78,3 +78,52 @@ class IsAuthenticated(APIView):
     def get(self, request, format=None):
         is_authenticated = is_soundcloud_authenticated(self.request.session.session_key)
         return Response({"status": is_authenticated}, status = status.HTTP_200_OK)
+
+class SoundCloudSearch(APIView):
+    def get(self, request, format=None):
+        query = request.GET.get('q')
+
+        print("Session key:", request.session.session_key)
+
+        if not query:
+            return Response({"Message": "No Query Found."}, status = status.HTTP_400_BAD_REQUEST)
+
+        session_id = request.session.session_key
+
+        if not is_soundcloud_authenticated(session_id):
+            return Response(
+                {"error": "User not authenticated with SoundCloud"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        token = get_user_tokens(session_id).access_token
+
+        sc_response = get(
+            "https://api.soundcloud.com/tracks",
+            headers={
+                "Authorization": f"OAuth {token}"
+            },
+            params={
+                "q": query,
+                "limit": 10,
+            }
+        )
+
+        print("SoundCloud status:", sc_response.status_code)
+        print("SoundCloud response:", sc_response.text[:200])
+
+        response = sc_response.json()
+
+        tracks = response if isinstance(response, list) else response.get("collection", [])
+
+        results = []
+
+        for track in tracks:
+            results.append({
+                "id": track.get("id"),
+                "title": track.get("title"),
+                "artist": track.get("user", {}).get("username"),
+                "artwork": track.get("artwork_url"),
+            })
+
+        return Response(results, status= status.HTTP_200_OK)

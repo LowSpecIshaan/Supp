@@ -24,10 +24,14 @@ class Room extends Component {
             guestCanPause: true,
             isHost: false,
             settings: false,
-            songLoaded: true,
+            songLoaded: false,
             playing: false,
+            searchQuery: "",
+            searchResults: [],
+            trackID: 2173060635,
         };
         this.roomCode = props.params.roomCode;
+        this.searchRef = React.createRef();
 
         this.leaveRoom = this.leaveRoom.bind(this);
         this.showSettings = this.showSettings.bind(this);
@@ -35,8 +39,18 @@ class Room extends Component {
         this.renderSettingsButton = this.renderSettingsButton.bind(this);
     }
 
+    componentWillUnmount() {
+        document.removeEventListener("mousedown", this.handleClickOutside);
+
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+        }
+    }
+
     componentDidMount() {
         this.getRoomInfo();
+
+        document.addEventListener("mousedown", this.handleClickOutside);
 
         const script = document.createElement("script");
         script.src = "https://w.soundcloud.com/player/api.js";
@@ -89,22 +103,36 @@ class Room extends Component {
                 });
 
                 this.pollInterval = setInterval(async () => {
-                    const res = await fetch(`/api/current-playback?room_code=${this.roomCode}`);
-                    const data = await res.json();
+                    let data;
 
-                    if (!this.widget) return;
+                    try {
+                        const res = await fetch(`/api/current-playback?room_code=${this.roomCode}`);
+                        if (!res.ok) return;
+                        data = await res.json();   // ← REMOVE const
+                    } catch (err) {
+                        console.error("Polling error:", err);
+                        return;
+                    }
+
+                    if (!data || !this.widget) return;
+
+                    if (data.track_id && data.track_id !== this.state.trackID) {
+                        this.setState({ trackID: data.track_id });
+
+                        this.widget.load(
+                            `https://api.soundcloud.com/tracks/${data.track_id}`,
+                            { auto_play: data.state === "play" }
+                        );
+
+                        return;
+                    }
 
                     this.widget.isPaused(paused => {
-                        if (data.state === "play" && paused) {
-                            this.widget.play();
-                        }
-
-                        if (data.state === "pause" && !paused) {
-                            this.widget.pause();
-                        }
+                        if (data.state === "play" && paused) this.widget.play();
+                        if (data.state === "pause" && !paused) this.widget.pause();
                     });
-                }, 1000);
 
+                }, 2000);
             }
         };
 
@@ -162,6 +190,8 @@ class Room extends Component {
                     votesToSkip: data.votes_to_skip,
                     guestCanPause: data.guest_can_pause,
                     isHost: data.is_host,
+                    trackID: data.track_id,
+                    songLoaded: !!data.track_id,
                 });
             });
     }
@@ -195,8 +225,6 @@ class Room extends Component {
     }
 
     renderPlayer() {
-        const trackId = 43315398;
-
         return (
             <Grid item xs={12} mt="10px" display="flex" justifyContent="center">
                 <iframe
@@ -204,11 +232,87 @@ class Room extends Component {
                     height="166"
                     allow="autoplay"
                     id="sc-player"
-                    src={`https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${trackId}&color=%23ff5500`}
+                    src={`https://w.soundcloud.com/player/?url=https://api.soundcloud.com/tracks/${this.state.trackID}&color=%23ff5500`}
                 />
             </Grid>
         )
     }
+
+    searchTracks = async (e) => {
+        if (e) e.preventDefault();
+
+        try {
+            const res = await fetch(
+                `/soundcloud/soundcloud-search?q=${encodeURIComponent(this.state.searchQuery)}`
+            );
+
+            const data = await res.json();
+
+            this.setState({
+                searchResults: data
+            });
+        } catch (err) {
+            console.error("Search error:", err);
+        }
+    };
+
+    renderSearch() {
+        return (
+            <>
+                <Grid item xs={12} mt="10px" display="flex" justifyContent="center" component="form" onSubmit={this.searchTracks}>
+                    <TextField
+                        fullWidth
+                        placeholder="Search SoundCloud..."
+                        value={this.state.searchQuery}
+                        onChange={(e) => this.setState({ searchQuery: e.target.value })}
+                    />
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ mt: 1, margin: "3px" }}
+                    >
+                        Search
+                    </Button>
+                </Grid>
+            </>
+        )
+    }
+
+    selectTrack = async (trackId) => {
+        try {
+            await fetch("/api/select-track", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    track_id: trackId,
+                    room_code: this.roomCode
+                })
+            });
+
+            this.setState({
+                searchResults: [],
+                searchQuery: "",
+                songLoaded: true,
+                trackID: trackId,
+            });
+
+        } catch (err) {
+            console.error("Track select failed:", err);
+        }
+    };
+
+    handleClickOutside = (event) => {
+        if (
+            this.searchRef.current &&
+            !this.searchRef.current.contains(event.target)
+        ) {
+            this.setState({ searchResults: [] });
+        }
+    };
 
     renderSettings() {
         return (
@@ -272,7 +376,40 @@ class Room extends Component {
                                 <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Guests can Pause: {this.state.guestCanPause.toString()}</Typography>
                                 <Typography textAlign="center" component="h6" variant="h6" sx={{ fontFamily: "Inter", fontWeight: "700" }}>Votes to Skip: {this.state.votesToSkip}</Typography>
                             </Grid>
-                            {this.state.songLoaded ? this.renderPlayer() : null}
+                            <Box sx={{ position: "relative", width: "100%" }} ref={this.searchRef}>
+                                {this.state.isHost ? this.renderSearch() : null}
+                                {this.state.searchResults.length > 0 && (
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            top: "100%",
+                                            left: 0,
+                                            width: "95%",
+                                            bgcolor: "#f4f4f4",
+                                            borderRadius: "8px",
+                                            boxShadow: 3,
+                                            zIndex: 50,
+                                            maxHeight: "300px",
+                                            overflowY: "auto",
+                                            mt: 1,
+                                            p: 1,
+                                        }}
+                                    >
+                                        {this.state.searchResults.map(track => (
+                                            <Button key={track.id} onClick={() => this.selectTrack(track.id)} sx={{ width: "100%" }}>
+                                                <Box sx={{ mb: 1 }}>
+                                                    <Typography sx={{ color: "#1d1b28" }}>{track.title}</Typography>
+                                                    <Typography variant="caption" sx={{ color: "#1d1b28" }}>
+                                                        {track.artist}
+                                                    </Typography>
+                                                </Box>
+                                            </Button>
+                                        ))}
+                                    </Box>
+                                )}
+                            </Box>
+
+                            {this.renderPlayer()}
                             {this.state.isHost ? this.renderSettingsButton() : null}
                             <Grid item xs={12} marginTop="10px" display="flex" justifyContent="center">
                                 <Button item color="warning" sx={{ margin: "5px" }} variant="contained" onClick={this.leaveRoom}>
