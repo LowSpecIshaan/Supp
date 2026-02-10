@@ -55,12 +55,16 @@ export default class HomePage extends Component {
                     <Box sx={{ paddingX: "20px", paddingY: "40px", background: "#1d1b28", borderRadius: "8px" }}>
                         <Typography variant="h3" sx={{ fontFamily: "Inter", fontWeight: "700", fontStyle: "italic", textAlign: "center" }}>Supp!</Typography>
                         <Grid item xs={12} align="center" sx={{ marginTop: "15px", width: "100%", textAlign: "center" }}>
-                            <Button item color="primary" sx={{ margin: "5px", width: "50%" }} variant="contained" to="/join" component={Link}>
+                            <Button item color="primary" sx={{ margin: "5px", width: "60%" }} variant="contained" to="/join" component={Link}>
                                 Join Room
-                            </Button>
+                            </Button><br />
                             <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
                                 Create Room
+                            </Button><br />
+                            <Button item color="success" sx={{ margin: "5px" }} variant="contained" target="_blank" to="https://www.linkedin.com/posts/ishaangupta3112_the-soundcloud-api-doesnt-really-get-along-activity-7425654671706464256-HO7u?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEouVh4BZpYNhujx7Rsg9qV5EYk1EZIGm14" component={Link}>
+                                Demo Link
                             </Button>
+                            <Typography sx={{fontSize: "11px", marginTop: "10px", opacity: "0.5"}}>Note: You would need to sign in with<br /> SoundCloud in order to create a room.</Typography>
                         </Grid>
                     </Box>
                 </Grid>

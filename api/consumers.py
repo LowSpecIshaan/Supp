@@ -13,7 +13,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group, self.channel_name)
         await self.accept()
 
-        # ⭐ SEND CURRENT STATE IMMEDIATELY (like polling)
         try:
             room = await sync_to_async(Room.objects.get)(code=self.room_code)
 

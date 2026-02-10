@@ -4,6 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background:
+        radial-gradient(circle, rgba(130, 193, 200, 0.038) 0 570px, transparent 160px),
         radial-gradient(circle, rgba(130, 200, 137, 0.119) 0 370px, transparent 160px),
         radial-gradient(circle, rgba(221, 191, 219, 0.107) 0 250px, transparent 200px),
         radial-gradient(circle, rgba(170, 251, 255, 0.095) 0 160px, transparent 120px),

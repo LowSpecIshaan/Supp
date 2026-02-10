@@ -108,7 +108,7 @@ class Room extends Component {
                     try {
                         const res = await fetch(`/api/current-playback?room_code=${this.roomCode}`);
                         if (!res.ok) return;
-                        data = await res.json();   // ← REMOVE const
+                        data = await res.json(); 
                     } catch (err) {
                         console.error("Polling error:", err);
                         return;
