@@ -2,12 +2,16 @@ import secrets
 import hashlib
 import base64
 from django.shortcuts import render, redirect
-from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from rest_framework.views import APIView
 from requests import Request, post, get
 from rest_framework import status
 from rest_framework.response import Response
 from .util import update_or_create_user_tokens, is_soundcloud_authenticated, get_user_tokens
+import os
+
+CLIENT_ID = os.environ.get("SOUNDCLOUD_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("SOUNDCLOUD_CLIENT_SECRET")
+REDIRECT_URI = os.environ.get("SOUNDCLOUD_REDIRECT_URI")
 
 class AuthURL(APIView):
     def get(self, request, format=None):
