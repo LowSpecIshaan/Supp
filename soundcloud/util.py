@@ -1,8 +1,12 @@
 from .models import SoundCloudToken
 from django.utils import timezone
 from datetime import timedelta
-from .credentials import CLIENT_ID, CLIENT_SECRET
 from requests import post
+import os
+
+CLIENT_ID = os.environ.get("SOUNDCLOUD_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("SOUNDCLOUD_CLIENT_SECRET")
+
 
 def get_user_tokens(session_id):
     user_tokens = SoundCloudToken.objects.filter(user=session_id)
