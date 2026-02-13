@@ -61,8 +61,8 @@ export default class HomePage extends Component {
                             <Button item color="secondary" sx={{ margin: "5px" }} variant="contained" to="/create" component={Link}>
                                 Create Room
                             </Button><br />
-                            <Button item color="success" sx={{ margin: "5px" }} variant="contained" target="_blank" to="https://www.linkedin.com/posts/ishaangupta3112_the-soundcloud-api-doesnt-really-get-along-activity-7425654671706464256-HO7u?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEouVh4BZpYNhujx7Rsg9qV5EYk1EZIGm14" component={Link}>
-                                Demo Link
+                            <Button item color="success" sx={{ margin: "5px" }} variant="contained" target="_blank" to="static/videos/supp-demo.mp4" component={Link}>
+                                Demo Video
                             </Button>
                             <Typography sx={{fontSize: "11px", marginTop: "10px", opacity: "0.5"}}>Note: You would need to sign in with<br /> SoundCloud in order to create a room.</Typography>
                         </Grid>
