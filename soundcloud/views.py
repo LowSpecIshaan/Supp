@@ -9,9 +9,9 @@ from rest_framework.response import Response
 from .util import update_or_create_user_tokens, is_soundcloud_authenticated, get_user_tokens
 import os
 
-CLIENT_ID = os.environ.get("SOUNDCLOUD_CLIENT_ID")
-CLIENT_SECRET = os.environ.get("SOUNDCLOUD_CLIENT_SECRET")
-REDIRECT_URI = os.environ.get("SOUNDCLOUD_REDIRECT_URI")
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+REDIRECT_URI = os.environ.get("REDIRECT_URI")
 
 class AuthURL(APIView):
     def get(self, request, format=None):

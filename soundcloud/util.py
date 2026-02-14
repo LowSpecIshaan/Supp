@@ -4,8 +4,8 @@ from datetime import timedelta
 from requests import post
 import os
 
-CLIENT_ID = os.environ.get("SOUNDCLOUD_CLIENT_ID")
-CLIENT_SECRET = os.environ.get("SOUNDCLOUD_CLIENT_SECRET")
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
 
 
 def get_user_tokens(session_id):
